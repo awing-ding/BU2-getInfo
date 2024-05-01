@@ -28,5 +28,6 @@ TOKEN=discord-bot-token
 ```
 5. Lancer le bot
 ```bash
-node index.js
+node main.js data (lance le bot en mode envoie de fiche)
+node main.js classement (lance le bot en mode classement (pas encore implémenté))
 ```
