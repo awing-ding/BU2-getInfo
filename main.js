@@ -22,9 +22,10 @@ if (process.argv.length != 3) {
 }
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+const key = JSON.parse(Buffer.from(process.env.PKEY_GOOGLE, 'base64').toString());
 const jwt = new JWT({
-    email: process.env.EMAIL,
-    key: process.env.PKEY_GOOGLE,
+    email: key.client_email,
+    key: key.private_key,
     scopes: SCOPES
 });
 
