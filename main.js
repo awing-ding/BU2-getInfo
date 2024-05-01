@@ -59,27 +59,27 @@ async function sendSheetData(){
         niveauCivilisationnel = publicData.getCellByA1("C19").value;
         relationsCommerciales = "";
         relationsDiplomatiques = "";
-        for (let i = 29; i < 85; i += 2){
-            relationsCommerciales += `${publicData.getCell(i, 22).value}\n`;
-            relationsDiplomatiques += `${publicData.getCell(i, 14).value}\n`;
+        for (let i = 28; i < 85; i += 2){
+            relationsCommerciales += `${publicData.getCell(i, 22).value}\n`.replace(/^null\n/, "");
+            relationsDiplomatiques += `${publicData.getCell(i, 14).value}\n`.replace(/^null\n/, "");
         }
         ethniePrincipale = publicData.getCellByA1("C17").value;
         niveauCivilisationnel = niveauCivilisationnel.replace(/ \d+$/, "");
         message = `**Nom officiel :** ${nomOfficiel}
-                   **Population :** ${round(sheet.getCellByA1("F3").value, 2)}
-                   **Régime :** ${regime}
-                   **Autorité :** ${autorite}
-                   **Orientation :** ${orientationPolitique}
-                   **Capitale :** ${sheet.getCellByA1("N20").value}
-                   **Niveau de Développement :** ${round(sheet.getCellByA1("U79").value, 2)}
-                   **Ethnie principale :** ${ethniePrincipale}
-                   **Niveau Civilisationnel :** ${niveauCivilisationnel}
+**Population :** ${round(sheet.getCellByA1("F3").value, 2)}
+**Régime :** ${regime}
+**Autorité :** ${autorite}
+**Orientation :** ${orientationPolitique}
+**Capitale :** ${sheet.getCellByA1("N20").value}
+**Niveau de Développement :** ${round(sheet.getCellByA1("U79").value, 2)}
+**Ethnie principale :** ${ethniePrincipale}
+**Niveau Civilisationnel :** ${niveauCivilisationnel}
 
-                   **Relations commerciales :**
-                   ${relationsCommerciales}
+**Relations commerciales :**
+${relationsCommerciales}
 
-                   **Relations diplomatiques :**
-                   ${relationsDiplomatiques}`;
+**Relations diplomatiques :**
+${relationsDiplomatiques}`;
         client.channels.cache.get(sheets[documentId]).send(message);
     }
 }
@@ -88,14 +88,13 @@ client.on(Events.ClientReady, async () => {
     console.log(`Logged in as ${client.user.tag}`);
     
     if (process.argv[2] == "data") {
-        sendSheetData();
+        await sendSheetData();
     } else if (process.argv[2] == "classement") {
-        sendClassement();
+        await sendClassement();
     }
     else {
         console.log(`Commande inconnue : ${process.argv[2]}`);
     }
-
     await client.destroy();
 });
 
