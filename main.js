@@ -84,7 +84,7 @@ async function sendSheetData(){
     }
 }
 
-client.on(Events.ClientReady, () => {
+client.on(Events.ClientReady, async () => {
     console.log(`Logged in as ${client.user.tag}`);
     
     if (process.argv[2] == "data") {
@@ -96,7 +96,7 @@ client.on(Events.ClientReady, () => {
         console.log(`Commande inconnue : ${process.argv[2]}`);
     }
 
-    client.destroy();
+    await client.destroy();
 });
 
 client.login(process.env.TOKEN);
