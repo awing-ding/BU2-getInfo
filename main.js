@@ -9,7 +9,7 @@ if (env.error) {
     throw env.error;
 }
 
-if (!process.env.EMAIL || !process.env.PKEY_GOOGLE || !process.env.TOKEN) {
+if (!process.env.PKEY_GOOGLE || !process.env.TOKEN) {
     throw new Error("Missing environment variables");
 }
 
@@ -21,7 +21,7 @@ if (process.argv.length != 3) {
     `;
 }
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const key = JSON.parse(Buffer.from(process.env.PKEY_GOOGLE, 'base64').toString());
 const jwt = new JWT({
     email: key.client_email,
@@ -49,41 +49,21 @@ async function sendSheetData(){
         let niveauCivilisationnel = "error";
         let relationsCommerciales = "non implémenté";
         let relationsDiplomatiques = "non implémenté";
-        if (sheet.getCellByA1("AF3").value){
-            regime = sheet.getCellByA1("AG3").value;
-        } else {
-            regime = sheet.getCellByA1("AG4").value;
-        }
-        for (let i = 5; i < 8; i++){
-            if (sheet.getCell(i, 31).value){
-                autorite = sheet.getCell(i, 32).value;
-            }
-        }
-        for (let i = 8; i < 15; i++){
-            if (sheet.getCell(i, 31).value){
-                orientationPolitique = sheet.getCell(i, 32).value;
-            }
-        }
-        for (let i = 55; i < 109; i++){
-            let backgroundColour = sheet.getCell(i, 27).backgroundColor;
-            if (!backgroundColour.blue && !backgroundColour.green && !backgroundColour.red){
-                ethniePrincipale = sheet.getCell(i, 27).value;
-            }
-        }
-        for (let i = 52; i < 57; i++){
-            if (sheet.getCell(i, 31).value){
-                niveauCivilisationnel = sheet.getCell(i, 32).value;
-            }
-        }
         let publicData = doc.sheetsByIndex[2];
         await publicData.loadCells("A1:AA121");
         nomOfficiel = publicData.getCellByA1("C3").value;
+        regime = publicData.getCellByA1("C7").value;
+        autorite = publicData.getCellByA1("C9").value;
+        orientationPolitique = publicData.getCellByA1("C11").value;
+        ethniePrincipale = publicData.getCellByA1("C17").value;
+        niveauCivilisationnel = publicData.getCellByA1("C19").value;
         relationsCommerciales = "";
         relationsDiplomatiques = "";
         for (let i = 29; i < 85; i += 2){
             relationsCommerciales += `${publicData.getCell(i, 22).value}\n`;
             relationsDiplomatiques += `${publicData.getCell(i, 14).value}\n`;
         }
+        ethniePrincipale = publicData.getCellByA1("C17").value;
         niveauCivilisationnel = niveauCivilisationnel.replace(/ \d+$/, "");
         message = `**Nom officiel :** ${nomOfficiel}
                    **Population :** ${round(sheet.getCellByA1("F3").value, 2)}
