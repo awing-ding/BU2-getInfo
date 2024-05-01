@@ -5,6 +5,22 @@ const sheets = require('./sheets.json');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
 
+if (env.error) {
+    throw env.error;
+}
+
+if (!process.env.EMAIL || !process.env.PKEY_GOOGLE || !process.env.TOKEN) {
+    throw new Error("Missing environment variables");
+}
+
+if (process.argv.length != 3) {
+    `Nombre invalide d'arguments. Usage: node main.js <commande>
+    Commandes:
+    - "data" : envoie les données des feuilles de calculs sur le serveur Discord
+    - "classement" : envoie le classement des pays sur le serveur Discord
+    `;
+}
+
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 const jwt = new JWT({
     email: process.env.EMAIL,
@@ -59,7 +75,15 @@ async function sendSheetData(){
                 niveauCivilisationnel = sheet.getCell(i, 32).value;
             }
         }
-        
+        let publicData = doc.sheetsByIndex[2];
+        await publicData.loadCells("A1:AA121");
+        nomOfficiel = publicData.getCellByA1("C3").value;
+        relationsCommerciales = "";
+        relationsDiplomatiques = "";
+        for (let i = 29; i < 85; i += 2){
+            relationsCommerciales += `${publicData.getCell(i, 22).value}\n`;
+            relationsDiplomatiques += `${publicData.getCell(i, 14).value}\n`;
+        }
         niveauCivilisationnel = niveauCivilisationnel.replace(/ \d+$/, "");
         message = `**Nom officiel :** ${nomOfficiel}
                    **Population :** ${round(sheet.getCellByA1("F3").value, 2)}
@@ -82,7 +106,16 @@ async function sendSheetData(){
 
 client.on(Events.ClientReady, () => {
     console.log(`Logged in as ${client.user.tag}`);
-    sendSheetData();
+    
+    if (process.argv[2] == "data") {
+        sendSheetData();
+    } else if (process.argv[2] == "classement") {
+        sendClassement();
+    }
+    else {
+        console.log(`Commande inconnue : ${process.argv[2]}`);
+    }
+
     client.destroy();
 });
 
