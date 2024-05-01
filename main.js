@@ -36,8 +36,7 @@ function round(value, decimals) {
 
 async function sendSheetData(){
     for (documentId in sheets) {
-        const doc = new GoogleSpreadsheet(documentId);
-        await doc.useServiceAccountAuth(jwt);
+        const doc = new GoogleSpreadsheet(documentId; jwt);
         await doc.loadInfo();
         const sheet = doc.sheetsByIndex[0];
         await sheet.loadCells("A1:CE121");
