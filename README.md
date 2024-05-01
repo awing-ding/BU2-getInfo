@@ -13,8 +13,8 @@ npm install
 ```
 3. Créer un fichier `.env` à la racine du projet et ajouter les variables d'environnement suivantes :
 ```bash
-GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account-email
-GOOGLE_PRIVATE_KEY=your-private-key
+EMAIL=your-service-account-email
+PKEY_GOOGLE=your-private-key
 
 TOKEN=discord-bot-token
 ```
