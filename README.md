@@ -2,6 +2,7 @@
 - [Node.js et npm installé sur votre machine](https://learn.microsoft.com/fr-fr/windows/dev-environment/javascript/nodejs-on-windows)
 - [Le mode projet de l'API](https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication?id=setting-up-your-quotapplicationquot) doit être en place
 - [Un compte de service](https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication?id=service-account) doit exister
+- [Créer un bot discord](https://discordjs.guide/preparations/setting-up-a-bot-application.html)
 
 # Installation
 1. Cloner le code source
