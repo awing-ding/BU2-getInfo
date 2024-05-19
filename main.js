@@ -181,7 +181,7 @@ async function outputClassement(data, variable, name, channel){
             await sendSheetData(process.argv[3]);
         } else if (process.argv[2] == "classement") {
             if (process.argv.length == 3) {
-                argv[3] = SALON_CLASSEMENT;
+                process.argv[3] = SALON_CLASSEMENT;
             }
             await sendClassement();
         }
