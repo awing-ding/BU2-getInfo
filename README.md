@@ -29,6 +29,6 @@ TOKEN=discord-bot-token
 ```
 5. Lancer le bot
 ```bash
-node main.js data (lance le bot en mode envoie de fiche)
-node main.js classement (lance le bot en mode classement (pas encore implémenté))
+node main.js data 50 #(lance le bot en mode envoie de fiche pour le tour 50)
+node main.js classement [id_du_channel] #(lance le bot en mode classement, le paramètre est optionnel et permet de spécifier le channel où envoyer le classement, par défaut c'est le channel classement)
 ```
