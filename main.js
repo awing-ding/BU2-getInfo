@@ -40,6 +40,7 @@ async function getSheetClassementData(id){
         const sheet = doc.sheetsByIndex[0];
         const sheet3 = doc.sheetsByIndex[2];
         await sheet.loadCells("A1:CE121");
+        await sheet3.loadCells("C3");
         let data = {};
         let nom = sheet3.getCellByA1("C3").value;
         data[nom] = {   "population": sheet.getCellByA1("F3").value,
@@ -73,49 +74,51 @@ async function getSheetClassementData(id){
     });
 }
 
-async function sendClassement(){
+async function sendClassement(channel){
     let fullData = [];
     for (let documentId in sheets){
         fullData.push(await getSheetClassementData(documentId));
     }
     Promise.all(fullData).then((data) => {
-        outputClassement(data, "population", "population");
-        outputClassement(data, "revenu", "revenu");
-        outputClassement(data, "impots", "impots");
-        outputClassement(data, "production", "production");
-        outputClassement(data, "exportation", "exportation");
-        outputClassement(data, "infrastructure", "infrastructure");
-        outputClassement(data, "income", "income");
-        outputClassement(data, "armeetot", "armée totale");
-        outputClassement(data, "armee", "armée");
-        outputClassement(data, "marine", "marine");
-        outputClassement(data, "air", "armée de l'air");
-        outputClassement(data, "brut_dev", "développement brut");
-        outputClassement(data, "net_dev", "développement net");
-        outputClassement(data, "bois", "industrie du bois");
-        outputClassement(data, "pierre", "industrie de la pierre");
-        outputClassement(data, "plante", "industrie de la plante");
-        outputClassement(data, "sable", "industrie du sable");
-        outputClassement(data, "alu", "industrie de l'aluminium");
-        outputClassement(data, "carbone", "industrie du carbone");
-        outputClassement(data, "chromium", "industrie du chrome");
-        outputClassement(data, "cuivre", "industrie du cuivre");
-        outputClassement(data, "fer", "industrie du fer");
-        outputClassement(data, "charbon", "industrie du charbon");
-        outputClassement(data, "gaz", "industrie du gaz");
-        outputClassement(data, "petrole", "industrie du pétrole");
+        outputClassement(data, "population", "population", channel);
+        outputClassement(data, "revenu", "revenu", channel);
+        outputClassement(data, "impots", "impots", channel);
+        outputClassement(data, "production", "production", channel);
+        outputClassement(data, "exportation", "exportation", channel);
+        outputClassement(data, "infrastructure", "infrastructure", channel);
+        outputClassement(data, "income", "income", channel);
+        outputClassement(data, "armeetot", "armée totale", channel);
+        outputClassement(data, "armee", "armée", channel);
+        outputClassement(data, "marine", "marine", channel);
+        outputClassement(data, "air", "armée de l'air", channel);
+        outputClassement(data, "brut_dev", "développement brut", channel);
+        outputClassement(data, "net_dev", "développement net", channel);
+        outputClassement(data, "bois", "industrie du bois", channel);
+        outputClassement(data, "pierre", "industrie de la pierre", channel);
+        outputClassement(data, "plante", "industrie de la plante", channel);
+        outputClassement(data, "sable", "industrie du sable", channel);
+        outputClassement(data, "alu", "industrie de l'aluminium", channel);
+        outputClassement(data, "carbone", "industrie du carbone", channel);
+        outputClassement(data, "chromium", "industrie du chrome", channel);
+        outputClassement(data, "cuivre", "industrie du cuivre", channel);
+        outputClassement(data, "fer", "industrie du fer", channel);
+        outputClassement(data, "charbon", "industrie du charbon", channel);
+        outputClassement(data, "gaz", "industrie du gaz", channel);
+        outputClassement(data, "petrole", "industrie du pétrole", channel);
     });
 }
 
 async function outputClassement(data, variable, name, channel){
     data.sort((a, b) => {
-        return data[a][variable] - data[b][variable];
+        return a[Object.keys(a)[0]][variable] - b[Object.keys(b)[0]][variable];
     });
     let message = `**Classement des pays par ${name} :**\n`;
-    for (let country in data){
-        message += `${country} : ${round(data[country][variable], 2)}\n`;
+    let country = "";
+    for (let obj in data){
+        country = Object.keys(data[obj])[0];
+        message += `${country} : ${round(data[obj][country][variable], 2)}\n`;
     }
-    client.channels.cache.get(channel).send(message);
+    client.channels.fetch(channel).then(channel => {channel.send(message)});
 }
 
 
@@ -155,21 +158,21 @@ async function outputClassement(data, variable, name, channel){
             ethniePrincipale = publicData.getCellByA1("C17").value;
             niveauCivilisationnel = niveauCivilisationnel.replace(/ \d+$/, "");
             message = `**Tour ${tour}**
-                **Nom officiel :** ${nomOfficiel}
-                **Population :** ${round(sheet.getCellByA1("F3").value, 2)}
-                **Régime :** ${regime}
-                **Autorité :** ${autorite}
-                **Orientation :** ${orientationPolitique}
-                **Capitale :** ${sheet.getCellByA1("N20").value}
-                **Niveau de Développement :** ${round(sheet.getCellByA1("U79").value, 2)}
-                **Ethnie principale :** ${ethniePrincipale}
-                **Niveau Civilisationnel :** ${niveauCivilisationnel}
+**Nom officiel :** ${nomOfficiel}
+**Population :** ${round(sheet.getCellByA1("F3").value, 2)}
+**Régime :** ${regime}
+**Autorité :** ${autorite}
+**Orientation :** ${orientationPolitique}
+**Capitale :** ${sheet.getCellByA1("N20").value}
+**Niveau de Développement :** ${round(sheet.getCellByA1("U79").value, 2)}
+**Ethnie principale :** ${ethniePrincipale}
+**Niveau Civilisationnel :** ${niveauCivilisationnel}
 
-                **Relations commerciales :**
-                ${relationsCommerciales}
+**Relations commerciales :**
+${relationsCommerciales}
 
-                **Relations diplomatiques :**
-                ${relationsDiplomatiques}`;
+**Relations diplomatiques :**
+${relationsDiplomatiques}`;
             client.channels.cache.get(sheets[documentId]).send(message);
         }
     }
@@ -178,15 +181,21 @@ async function outputClassement(data, variable, name, channel){
         console.log(`Logged in as ${client.user.tag}`);
         
         if (process.argv[2] == "data") {
+            if (process.argv.length == 3) {
+                console.log("Veuillez spécifier le numéro du tour");
+                throw new Error("Numéro de tour manquant");
+            }
             await sendSheetData(process.argv[3]);
         } else if (process.argv[2] == "classement") {
+            let channel = process.argv[3];
             if (process.argv.length == 3) {
-                process.argv[3] = SALON_CLASSEMENT;
+                channel = SALON_CLASSEMENT;
             }
-            await sendClassement();
+            await sendClassement(channel);
         }
         else {
             console.log(`Commande inconnue : ${process.argv[2]}`);
+            throw new Error("Commande inconnue");
         }
         await client.destroy();
     });
