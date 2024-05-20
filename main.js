@@ -72,6 +72,7 @@ async function getSheetClassementData(id, tryCount = 0){
                 "gaz": sheet.getCellByA1("L70").value,
                 "petrole": sheet.getCellByA1("L71").value
             };
+        resolve(data);
         } catch (error) {
             if (tryCount > 3) {
                 reject(error);
@@ -80,7 +81,6 @@ async function getSheetClassementData(id, tryCount = 0){
                     getSheetClassementData(id, tryCount + 1).then((data) => {resolve(data)});
                 }, 5000);
         }
-        resolve(data);
     });
 }
 
@@ -123,10 +123,12 @@ async function outputClassement(data, variable, name, channel){
         return a[Object.keys(a)[0]][variable] - b[Object.keys(b)[0]][variable];
     }).reverse();
     let message = [`**Classement des pays par ${name} :**\n`];
-    let country = "";
     for (let obj in data){
-        country = Object.keys(data[obj])[0];
-        message.push(`${country} : ${round(data[obj][country][variable], 2)}\n`);
+        let country = Object.keys(data[obj])[0];
+        let data = round(data[obj][country][variable], 2);
+        if (data != 0) {
+            message.push(`${country} : ${data}\n`);
+        }
     }
     let msgArrayLength = message.length;
     let msg1 = message.slice(0, Math.ceil(msgArrayLength / 2)).join("");
