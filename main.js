@@ -125,9 +125,9 @@ async function outputClassement(data, variable, name, channel){
     let message = [`**Classement des pays par ${name} :**\n`];
     for (let obj in data){
         let country = Object.keys(data[obj])[0];
-        let data = round(data[obj][country][variable], 2);
-        if (data != 0) {
-            message.push(`${country} : ${data}\n`);
+        let value = round(data[obj][country][variable], 2);
+        if (value != 0) {
+            message.push(`${country} : ${value}\n`);
         }
     }
     let msgArrayLength = message.length;
