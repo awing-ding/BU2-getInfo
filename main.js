@@ -122,7 +122,7 @@ async function outputClassement(data, variable, name, channel){
     data.sort((a, b) => {
         return a[Object.keys(a)[0]][variable] - b[Object.keys(b)[0]][variable];
     }).reverse();
-    let message = [`**Classement des pays par ${name} :**\n`];
+    let message = [`\`\`\`\`\`\`\n**Classement des pays par ${name} :**\n`];
     for (let obj in data){
         let country = Object.keys(data[obj])[0];
         let value = round(data[obj][country][variable], 2);
@@ -133,10 +133,17 @@ async function outputClassement(data, variable, name, channel){
     let msgArrayLength = message.length;
     let msg1 = message.slice(0, Math.ceil(msgArrayLength / 2)).join("");
     let msg2 = message.slice(Math.ceil(msgArrayLength / 2)).join("");
-    client.channels.fetch(channel).then(channel => {
-        channel.send(msg1);
-        channel.send(msg2);
-    });
+    if ((msg1 + msg2).length > 2000){ 
+        client.channels.fetch(channel).then(channel => {
+            channel.send(msg1);
+            channel.send(msg2);
+        });
+    }
+    else {
+        client.channels.fetch(channel).then(channel => {
+            channel.send(msg1 + msg2);
+        });
+    }
 }
 
     function round(value, decimals) {
